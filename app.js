@@ -31,7 +31,10 @@ app.get('/signUp', function (req, res) {
 });
 
 app.get('/isAvailable', function (req, res) {
- console.log(req)
+    db.connection.query('SELECT 1 FROM users WHERE user_name=\'' + req.query.userName + '\'', function (error, results) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({isAvailable: results && results.length === 0}))
+    });
 });
 
 app.get('/myApp', function (req, res) {
@@ -62,7 +65,7 @@ app.post('/login', function (req, res) {
 });
 
 app.post('/signUp', function (req, res) {
-    db.connection.query('INSERT INTO users (user_name, password) VALUES (\'' + req.body['user-name'] + '\',\'' + md5(req.body['password']) + '\')', function (error, results) {
+    db.connection.query('INSERT INTO users (user_name, password) VALUES (\'' + req.body['userName'] + '\',\'' + md5(req.body['password']) + '\')', function (error, results) {
         res.cookie('userId', '' + results.insertId);
         res.redirect('/myApp')
     });
